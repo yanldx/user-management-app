@@ -35,6 +35,8 @@ services:
       DB_NAME: ${DB_NAME:-appdb}
       DB_PORT: ${DB_PORT:-3306}
       INIT_ADMIN: ${INIT_ADMIN:-}
+    volumes:
+      - ./backend:/app
 
   frontend:
     build: ./frontend

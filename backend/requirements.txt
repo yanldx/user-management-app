@@ -5,6 +5,6 @@ pymysql
 python-dotenv
 pydantic[email]
 cryptography
-
+httpx
 pytest
 pytest-cov
