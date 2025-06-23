@@ -69,3 +69,22 @@ MYSQL_DATABASE: appdb
 ```
 
 Use these credentials when signing into Adminer (System: `MySQL`, Server: `mysql`, Username: `root`, Password: `root`, Database: `appdb`). Adjust the values in `docker-compose.yml` if you need different credentials before launching the containers.
+
+## Hosted MySQL setup
+
+You can deploy the application with a hosted MySQL instance (for example
+with [Aiven](https://aiven.io/) or [AlwaysData](https://www.alwaysdata.com/)).
+Set the following environment variables before starting Docker Compose:
+
+```
+DB_HOST=<remote host>
+DB_PORT=<remote port>
+DB_USER=<remote user>
+DB_PASSWORD=<remote password>
+DB_NAME=<database name>
+INIT_ADMIN=First,Last,email@example.com,password
+```
+
+`INIT_ADMIN` should contain the initial administrator credentials separated by
+commas. During application startup the backend will automatically create this
+user if it does not already exist.

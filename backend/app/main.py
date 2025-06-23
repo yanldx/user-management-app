@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from app.init_admin import create_admin_from_env
 
 app = FastAPI()
 
@@ -15,3 +16,9 @@ app.add_middleware(
 # Import de tes routes
 from app.routers import users  # exemple
 app.include_router(users.router)
+
+
+@app.on_event("startup")
+def startup_admin() -> None:
+    """Create the initial admin user if required."""
+    create_admin_from_env()
