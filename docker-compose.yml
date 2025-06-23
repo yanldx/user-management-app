@@ -29,10 +29,12 @@ services:
     depends_on:
       - mysql
     environment:
-      DB_HOST: mysql
-      DB_USER: root
-      DB_PASSWORD: root
-      DB_NAME: appdb
+      DB_HOST: ${DB_HOST:-mysql}
+      DB_USER: ${DB_USER:-root}
+      DB_PASSWORD: ${DB_PASSWORD:-root}
+      DB_NAME: ${DB_NAME:-appdb}
+      DB_PORT: ${DB_PORT:-3306}
+      INIT_ADMIN: ${INIT_ADMIN:-}
 
   frontend:
     build: ./frontend
