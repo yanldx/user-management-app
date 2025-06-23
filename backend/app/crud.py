@@ -2,8 +2,10 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from app.models import Base, User
 from app.schemas import UserCreate
+from app.config import get_database_url
 
-DATABASE_URL = "mysql+pymysql://root:root@mysql:3306/appdb"
+# Build the database URL using environment variables
+DATABASE_URL = get_database_url()
 
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
