@@ -1,5 +1,12 @@
 {
   "dependencies": {
     "react-scripts": "^5.0.1"
+  },
+  "devDependencies": {
+    "cypress": "^13.7.3"
+  },
+  "scripts": {
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run"
   }
 }
