@@ -1,4 +1,4 @@
-name: CI Backend
+name: CI
 
 on:
   push:
@@ -26,7 +26,13 @@ jobs:
           pip install -r requirements.txt
           pip install pytest pytest-cov
 
-      - name: Run tests
+      - name: Run tests with coverage
         run: |
           cd backend
           pytest --cov=app --cov-report=xml:coverage.xml
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: yanldx/user-management-app

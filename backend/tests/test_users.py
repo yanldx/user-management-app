@@ -5,20 +5,17 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 
 from fastapi.testclient import TestClient
 from app.main import app
-from app.database import Base, engine, SessionLocal
-from sqlalchemy.orm import Session
+from app.database import Base, engine
 import pytest
 
 client = TestClient(app)
 
 @pytest.fixture(autouse=True)
 def setup_and_teardown():
-    # Reset DB before each test
     Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
     yield
     Base.metadata.drop_all(bind=engine)
-
 
 def test_create_user():
     payload = {
@@ -37,9 +34,7 @@ def test_create_user():
     assert data["lastname"] == "Doe"
     assert data["email"] == "john@example.com"
 
-
 def test_read_users():
-    # Create a user first
     client.post("/api/users", json={
         "firstname": "Alice",
         "lastname": "Smith",
@@ -56,9 +51,7 @@ def test_read_users():
     assert len(data) >= 1
     assert "firstname" in data[0]
 
-
 def test_delete_user_success():
-    # Create a user first
     res = client.post("/api/users", json={
         "firstname": "User",
         "lastname": "ToDelete",
@@ -70,10 +63,9 @@ def test_delete_user_success():
     })
     user_id = res.json()["id"]
 
-    # Simulate admin login
     os.environ["ADMIN_EMAIL"] = "admin@test.com"
     os.environ["ADMIN_PASSWORD"] = "adminpass"
-    client.app.router.on_startup[0]()  # Trigger create_admin
+    app.router.on_startup[0]()  # Lance create_admin
 
     login_res = client.post("/api/login", json={
         "email": "admin@test.com",
@@ -86,11 +78,10 @@ def test_delete_user_success():
     assert response.status_code == 200
     assert response.json()["message"] == "Utilisateur supprimé"
 
-
 def test_delete_user_not_found():
     os.environ["ADMIN_EMAIL"] = "admin@test.com"
     os.environ["ADMIN_PASSWORD"] = "adminpass"
-    client.app.router.on_startup[0]()  # Trigger create_admin
+    app.router.on_startup[0]()  # Lance create_admin
 
     login_res = client.post("/api/login", json={
         "email": "admin@test.com",
