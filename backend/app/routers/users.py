@@ -5,6 +5,7 @@ from app import database, models, schemas
 import jwt
 from datetime import datetime, timedelta
 import os
+import bcrypt
 
 router = APIRouter()
 
@@ -16,8 +17,6 @@ def get_db():
         yield db
     finally:
         db.close()
-
-import bcrypt
 
 @router.post("/users", response_model=schemas.UserOut)
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
@@ -37,19 +36,18 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db.refresh(db_user)
     return db_user
 
-
 @router.get("/users", response_model=list[schemas.UserOut])
 def list_users(db: Session = Depends(get_db)):
     users = db.query(models.User).all()
     return users
 
-@router.delete("/users/{user_id}")
+@router.delete("/users/{id}")
 def delete_user(
-        user_id: int,
+        id: int,
         db: Session = Depends(get_db),
         admin=Depends(admin_required)
 ):
-    user = db.query(models.User).filter_by(id=user_id).first()
+    user = db.query(models.User).filter_by(id=id).first()
     if not user:
         raise HTTPException(status_code=404, detail="Utilisateur introuvable")
 
