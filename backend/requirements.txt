@@ -6,3 +6,6 @@ python-dotenv
 pydantic
 bcrypt
 pyjwt
+httpx
+pytest
+pytest-cov
