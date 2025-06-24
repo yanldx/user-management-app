@@ -31,7 +31,3 @@ def create_admin_from_env() -> None:
         print(f"❌ Failed to create admin: {e}")
     finally:
         db.close()
-
-if __name__ == "__main__" or __name__.endswith("app.init_admin"):
-    print("🚀 Running admin init script...")
-    create_admin_from_env()
