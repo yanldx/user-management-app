@@ -20,7 +20,7 @@ def test_create_user(monkeypatch):
     def fake_create_user(user):
         return DummyUser()
 
-    monkeypatch.setattr("app.crud.create_user", fake_create_user)
+    monkeypatch.setattr("app.routers.users.create_user", fake_create_user)
 
     payload = {
         "first_name": "John",
@@ -46,7 +46,7 @@ def test_read_users(monkeypatch):
     def fake_get_users():
         return [DummyUser(1), DummyUser(2)]
 
-    monkeypatch.setattr("app.crud.get_users", fake_get_users)
+    monkeypatch.setattr("app.routers.users.get_users", fake_get_users)
 
     response = client.get("/users/")
     assert response.status_code == 200
@@ -59,7 +59,7 @@ def test_delete_user_success(monkeypatch):
     def fake_delete_user(user_id: int):
         return True
 
-    monkeypatch.setattr("app.crud.delete_user", fake_delete_user)
+    monkeypatch.setattr("app.routers.users.delete_user", fake_delete_user)
 
     response = client.delete("/users/1")
     assert response.status_code == 200
@@ -70,7 +70,7 @@ def test_delete_user_not_found(monkeypatch):
     def fake_delete_user(user_id: int):
         return False
 
-    monkeypatch.setattr("app.crud.delete_user", fake_delete_user)
+    monkeypatch.setattr("app.routers.users.delete_user", fake_delete_user)
 
     response = client.delete("/users/99")
     assert response.status_code == 404
