@@ -1,4 +1,4 @@
-from app.database import engine
+from app import engine
 from sqlalchemy import text
 
 print("🧪 Connecting to:", engine.url)

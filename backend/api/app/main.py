@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.init_admin import create_admin_from_env
+from .init_admin import create_admin_from_env
 
 app = FastAPI()
 
@@ -14,7 +14,7 @@ app.add_middleware(
 )
 
 # Import de tes routes
-from app.routers import users  # exemple
+from .routers import users  # exemple
 app.include_router(users.router)
 
 

@@ -1,8 +1,8 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from app.models import Base, User
-from app.schemas import UserCreate
-from app.config import get_database_url
+from .models import Base, User
+from .schemas import UserCreate
+from .config import get_database_url
 
 # Build the database URL using environment variables
 DATABASE_URL = get_database_url()
@@ -42,4 +42,3 @@ def delete_user(user_id: int):
     db.commit()
     db.close()
     return True
-    
