@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.routes import users
+from app.routers import users
 from app.database import get_db
 from app.models import User
 import bcrypt
