@@ -5,8 +5,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from mangum import Mangum
 
-from app.init_admin import create_admin_from_env
-from app.routers.users import router as users_router
+from init_admin import create_admin_from_env
+from routers.users import router as users_router
 
 app = FastAPI()
 

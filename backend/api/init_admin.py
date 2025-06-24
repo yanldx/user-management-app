@@ -1,7 +1,7 @@
 import os
 from sqlalchemy.orm import Session
-from .crud import SessionLocal
-from .models import User
+from database import SessionLocal
+from models import User
 
 def create_admin_from_env() -> None:
     """Create an initial admin user if INIT_ADMIN and INIT_ADMIN_PASSWORD are set."""

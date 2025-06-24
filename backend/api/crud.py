@@ -1,8 +1,8 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from .models import Base, User
-from .schemas import UserCreate
-from .config import get_database_url
+from models import Base, User
+from schemas import UserCreate
+from config import get_database_url
 
 # Build the database URL using environment variables
 DATABASE_URL = get_database_url()
