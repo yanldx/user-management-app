@@ -2,7 +2,7 @@
   <div>
     <ul>
       <li v-for="user in users" :key="user.id">
-        {{ user.first_name }} {{ user.last_name }}
+        {{ user.firstname }} {{ user.lastname }}
         <span v-if="isAdmin"> - {{ user.email }}</span>
         <button v-if="isAdmin" @click="deleteUser(user.id)">Supprimer</button>
       </li>
@@ -13,24 +13,31 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps<{ users: any[]; isAdmin: boolean }>()
-const emit = defineEmits(['deleted'])
-
 import { ref } from 'vue'
 import { API_BASE_URL } from '../api'
+
+const props = defineProps<{ users: any[]; isAdmin: boolean }>()
+void props
+const emit = defineEmits(['deleted'])
 
 const deleteMessage = ref('')
 
 async function deleteUser(id: number) {
+  const token = localStorage.getItem('token') || ''
   try {
-    const res = await fetch(`${API_BASE_URL}/users/${id}`, { method: 'DELETE' })
+    const res = await fetch(`${API_BASE_URL}/users/${id}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
     if (res.ok) {
       deleteMessage.value = '🗑️ Utilisateur supprimé avec succès'
       emit('deleted')
     } else {
       deleteMessage.value = '❌ Erreur lors de la suppression'
     }
-  } catch (err) {
+  } catch {
     deleteMessage.value = '❌ Erreur réseau'
   }
 }

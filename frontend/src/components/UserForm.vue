@@ -46,8 +46,8 @@ async function submitForm() {
     emit('created')
     successMessage.value = '✅ Utilisateur créé avec succès !'
     errorMessage.value = ''
-    form.first_name = ''
-    form.last_name = ''
+    form.firstname = ''
+    form.lastname = ''
     form.email = ''
     form.password = ''
   } catch (err) {

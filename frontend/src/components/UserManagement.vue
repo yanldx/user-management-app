@@ -26,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import { API_BASE_URL } from '../api'
 import UserForm from './UserForm.vue'
 import UserList from './UserList.vue'
@@ -43,15 +43,26 @@ async function loadUsers() {
   users.value = await res.json()
 }
 
-function login() {
-  if (
-    loginEmail.value === 'loise.fenoll@ynov.com' &&
-    loginPassword.value === 'PvdrTAzTeR247sDnAZBr'
-  ) {
+async function login() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: loginEmail.value,
+        password: loginPassword.value,
+      }),
+    })
+
+    if (!response.ok) throw new Error()
+
+    const data = await response.json()
+    localStorage.setItem('token', data.access_token)
     isAdmin.value = true
     showLogin.value = false
+    error.value = ''
     loadUsers()
-  } else {
+  } catch {
     error.value = 'Identifiants incorrects'
   }
 }
@@ -61,6 +72,7 @@ function logout() {
   loginEmail.value = ''
   loginPassword.value = ''
   users.value = []
+  localStorage.removeItem('token')
 }
 </script>
 
