@@ -10,8 +10,9 @@ app = FastAPI()
 
 # Pour permettre les requêtes CORS depuis localhost et prod
 origins = [
-    "http://localhost:3000",
+    "http://localhost:5173",
     "https://oursel06.github.io",
+    "https://user-management-1d430k7vg-yanldxs-projects.vercel.app",
 ]
 
 app.add_middleware(

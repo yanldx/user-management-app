@@ -10,6 +10,7 @@
 
 <script setup lang="ts">
 import { reactive } from 'vue'
+import { API_BASE_URL } from '../api'
 const emit = defineEmits(['created'])
 
 const form = reactive({
@@ -20,7 +21,7 @@ const form = reactive({
 })
 
 async function submitForm() {
-  await fetch('http://localhost:5001/users/', {
+  await fetch(`${API_BASE_URL}/users/`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(form),
