@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from typing import List
-from app import crud, schemas
+from .. import crud, schemas
 
 router = APIRouter(prefix="/users", tags=["users"])
 
