@@ -8,6 +8,7 @@ from app.main import app
 
 client = TestClient(app)
 
+
 def test_create_user(monkeypatch):
     class DummyUser:
         def __init__(self):
@@ -41,6 +42,7 @@ def test_create_user(monkeypatch):
     assert data["lastname"] == "Doe"
     assert data["email"] == "john@example.com"
 
+
 def test_read_users(monkeypatch):
     class DummyUser:
         def __init__(self, uid):
@@ -64,6 +66,7 @@ def test_read_users(monkeypatch):
     assert len(data) == 2
     assert data[0]["id"] == 1
 
+
 def test_delete_user_success(monkeypatch):
     def fake_delete_user(id: int, db=None, admin=None):
         return {"message": "Utilisateur supprimé"}
@@ -73,6 +76,7 @@ def test_delete_user_success(monkeypatch):
     response = client.delete("/api/users/1")
     assert response.status_code == 200
     assert response.json() == {"message": "Utilisateur supprimé"}
+
 
 def test_delete_user_not_found(monkeypatch):
     from fastapi import HTTPException
