@@ -1,6 +1,7 @@
+from dotenv import load_dotenv
+load_dotenv()
+
 import os
-
-
 def get_database_url() -> str:
     """Construct the database URL from environment variables."""
     user = os.getenv("DB_USER", "root")

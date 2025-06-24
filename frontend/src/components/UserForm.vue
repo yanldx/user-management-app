@@ -1,29 +1,16 @@
 <template>
   <form @submit.prevent="submitForm">
-    <div>
-      <label>First Name</label>
-      <input data-testid="first" v-model="form.first_name" placeholder="First name" />
-    </div>
-    <div>
-      <label>Last Name</label>
-      <input data-testid="last" v-model="form.last_name" placeholder="Last name" />
-    </div>
-    <div>
-      <label>Email</label>
-      <input data-testid="email" v-model="form.email" type="email" placeholder="Email" />
-    </div>
-    <div>
-      <label>Password</label>
-      <input data-testid="password" v-model="form.password" type="password" placeholder="Password" />
-    </div>
-    <button data-testid="submit" type="submit">Create User</button>
+    <input v-model="form.first_name" placeholder="Prénom" />
+    <input v-model="form.last_name" placeholder="Nom" />
+    <input v-model="form.email" type="email" placeholder="Email" />
+    <input v-model="form.password" type="password" placeholder="Mot de passe" />
+    <button type="submit">Créer</button>
   </form>
 </template>
 
 <script setup lang="ts">
 import { reactive } from 'vue'
-
-const emitSubmit = defineEmits(['created'])
+const emit = defineEmits(['created'])
 
 const form = reactive({
   first_name: '',
@@ -38,10 +25,29 @@ async function submitForm() {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(form),
   })
-  emitSubmit('created')
+  emit('created')
   form.first_name = ''
   form.last_name = ''
   form.email = ''
   form.password = ''
 }
 </script>
+
+<style scoped>
+input {
+  display: block;
+  margin: 6px 0;
+  padding: 8px;
+  width: 100%;
+}
+button {
+  background-color: green;
+  color: white;
+  padding: 8px 12px;
+  border: none;
+  margin-top: 8px;
+}
+button:hover {
+  background-color: darkgreen;
+}
+</style>

@@ -1,109 +1,94 @@
 <template>
-  <div class="user-management">
-    <h1 class="mb-4 text-xl font-bold">User Management</h1>
-    <form class="space-y-2 mb-6" @submit.prevent="submitForm">
-      <div>
-        <label class="block text-sm">First Name</label>
-        <input v-model="form.first_name" class="border p-1 rounded w-full" />
-      </div>
-      <div>
-        <label class="block text-sm">Last Name</label>
-        <input v-model="form.last_name" class="border p-1 rounded w-full" />
-      </div>
-      <div>
-        <label class="block text-sm">Email</label>
-        <input v-model="form.email" type="email" class="border p-1 rounded w-full" />
-      </div>
-      <div>
-        <label class="block text-sm">Password</label>
-        <input v-model="form.password" type="password" class="border p-1 rounded w-full" />
-      </div>
-      <button type="submit" class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition-colors">Create</button>
-    </form>
+  <div class="container">
+    <h1>User Management</h1>
 
-    <table class="w-full table-auto border-collapse">
-      <thead>
-        <tr class="bg-gray-100">
-          <th class="border px-2 py-1 text-left">First</th>
-          <th class="border px-2 py-1 text-left">Last</th>
-          <th v-if="isAdmin" class="border px-2 py-1 text-left">Email</th>
-          <th class="border px-2 py-1 text-left"></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="user in users" :key="user.id" class="odd:bg-gray-50">
-          <td class="border px-2 py-1">{{ user.first_name }}</td>
-          <td class="border px-2 py-1">{{ user.last_name }}</td>
-          <td v-if="isAdmin" class="border px-2 py-1">{{ user.email }}</td>
-          <td class="border px-2 py-1 text-center">
-            <button @click="deleteUser(user.id)" class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition-colors">
-              🗑 Supprimer
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <div v-if="!isAdmin && !showLogin">
+      <UserForm @created="loadUsers" />
+      <button @click="showLogin = true">Accès administrateur</button>
+    </div>
+
+    <div v-if="showLogin && !isAdmin">
+      <h2>Connexion admin</h2>
+      <input v-model="loginEmail" type="email" placeholder="Email admin" />
+      <input v-model="loginPassword" type="password" placeholder="Mot de passe" />
+      <button @click="login">Connexion</button>
+      <button @click="showLogin = false">Annuler</button>
+      <p v-if="error" class="error">{{ error }}</p>
+    </div>
+
+    <div v-if="isAdmin">
+      <p><strong>Connecté en tant qu’admin</strong></p>
+      <button @click="logout">Se déconnecter</button>
+      <UserForm @created="loadUsers" />
+      <UserList :users="users" :isAdmin="true" @deleted="loadUsers" />
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
+import UserForm from './UserForm.vue'
+import UserList from './UserList.vue'
 
-interface User {
-  id: number
-  first_name: string
-  last_name: string
-  email: string
-  password?: string
-}
-
-const isAdmin = ref(true)
-
-const form = reactive({
-  first_name: '',
-  last_name: '',
-  email: '',
-  password: '',
-})
-
-const users = ref<User[]>([])
+const isAdmin = ref(false)
+const showLogin = ref(false)
+const loginEmail = ref('')
+const loginPassword = ref('')
+const error = ref('')
+const users = ref([])
 
 async function loadUsers() {
   const res = await fetch('http://localhost:5001/users/')
   users.value = await res.json()
 }
 
-async function submitForm() {
-  await fetch('http://localhost:5001/users/', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(form),
-  })
-  form.first_name = ''
-  form.last_name = ''
-  form.email = ''
-  form.password = ''
-  await loadUsers()
+function login() {
+  if (
+    loginEmail.value === 'loise.fenoll@ynov.com' &&
+    loginPassword.value === 'PvdrTAzTeR247sDnAZBr'
+  ) {
+    isAdmin.value = true
+    showLogin.value = false
+    loadUsers()
+  } else {
+    error.value = 'Identifiants incorrects'
+  }
 }
 
-async function deleteUser(id: number) {
-  await fetch(`http://localhost:5001/users/${id}`, { method: 'DELETE' })
-  await loadUsers()
+function logout() {
+  isAdmin.value = false
+  loginEmail.value = ''
+  loginPassword.value = ''
+  users.value = []
 }
-
-onMounted(loadUsers)
 </script>
 
 <style scoped>
-.user-management {
+.container {
   max-width: 600px;
-  margin: 0 auto;
+  margin: auto;
+  font-family: Arial, sans-serif;
+  padding: 20px;
+}
+input {
+  display: block;
+  margin: 6px 0;
+  padding: 8px;
+  width: 100%;
 }
 button {
-  transition: transform 0.1s ease-in-out;
+  margin-top: 8px;
+  padding: 8px 12px;
+  background-color: #007bff;
+  border: none;
+  color: white;
+  cursor: pointer;
 }
 button:hover {
-  transform: translateY(-2px);
+  background-color: #0056b3;
+}
+.error {
+  color: red;
+  margin-top: 10px;
 }
 </style>
-
