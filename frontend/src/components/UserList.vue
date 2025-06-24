@@ -12,8 +12,10 @@
 const props = defineProps<{ users: any[]; isAdmin: boolean }>()
 const emit = defineEmits(['deleted'])
 
+import { API_BASE_URL } from '../api'
+
 async function deleteUser(id: number) {
-  await fetch(`http://localhost:5001/users/${id}`, { method: 'DELETE' })
+  await fetch(`${API_BASE_URL}/users/${id}`, { method: 'DELETE' })
   emit('deleted')
 }
 </script>

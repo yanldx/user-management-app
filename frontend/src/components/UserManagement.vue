@@ -27,6 +27,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { API_BASE_URL } from '../api'
 import UserForm from './UserForm.vue'
 import UserList from './UserList.vue'
 
@@ -38,7 +39,7 @@ const error = ref('')
 const users = ref([])
 
 async function loadUsers() {
-  const res = await fetch('http://localhost:5001/users/')
+  const res = await fetch(`${API_BASE_URL}/users/`)
   users.value = await res.json()
 }
 

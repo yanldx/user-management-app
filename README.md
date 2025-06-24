@@ -55,6 +55,21 @@ npm run dev
 
 The development server runs on [http://localhost:5173](http://localhost:5173).
 
+### Frontend environment variables
+
+Create a `.env` file inside `frontend/` and provide the API endpoint base URL:
+
+```bash
+VITE_API_BASE_URL=http://localhost:5001/api
+```
+
+For production deployments replace the value with your hosted backend, for
+example:
+
+```bash
+VITE_API_BASE_URL=https://user-management-1d430k7vg-yanldxs-projects.vercel.app/api
+```
+
 ## Accessing Adminer
 
 Adminer allows you to browse the database easily. After the Docker stack starts, open [http://localhost:8080](http://localhost:8080) and log in using the MySQL credentials.
