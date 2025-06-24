@@ -5,27 +5,22 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 
 from fastapi.testclient import TestClient
 from app.main import app
+from app.database import Base, engine, SessionLocal
+from sqlalchemy.orm import Session
+import pytest
 
 client = TestClient(app)
 
+@pytest.fixture(autouse=True)
+def setup_and_teardown():
+    # Reset DB before each test
+    Base.metadata.drop_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
+    yield
+    Base.metadata.drop_all(bind=engine)
 
-def test_create_user(monkeypatch):
-    class DummyUser:
-        def __init__(self):
-            self.id = 1
-            self.firstname = "John"
-            self.lastname = "Doe"
-            self.email = "john@example.com"
-            self.birthdate = "1990-01-01"
-            self.city = "Paris"
-            self.postal_code = "75000"
-            self.is_admin = False
 
-    def fake_create_user(user, db=None):
-        return DummyUser()
-
-    monkeypatch.setattr("app.routers.users.create_user", fake_create_user)
-
+def test_create_user():
     payload = {
         "firstname": "John",
         "lastname": "Doe",
@@ -43,50 +38,68 @@ def test_create_user(monkeypatch):
     assert data["email"] == "john@example.com"
 
 
-def test_read_users(monkeypatch):
-    class DummyUser:
-        def __init__(self, uid):
-            self.id = uid
-            self.firstname = f"First{uid}"
-            self.lastname = f"Last{uid}"
-            self.email = f"user{uid}@example.com"
-            self.birthdate = "1990-01-01"
-            self.city = "Paris"
-            self.postal_code = "75000"
-            self.is_admin = False
-
-    def fake_list_users(db=None):
-        return [DummyUser(1), DummyUser(2)]
-
-    monkeypatch.setattr("app.routers.users.list_users", fake_list_users)
+def test_read_users():
+    # Create a user first
+    client.post("/api/users", json={
+        "firstname": "Alice",
+        "lastname": "Smith",
+        "email": "alice@example.com",
+        "password": "secret",
+        "birthdate": "1991-01-01",
+        "city": "Lyon",
+        "postal_code": "69000"
+    })
 
     response = client.get("/api/users")
     assert response.status_code == 200
     data = response.json()
-    assert len(data) == 2
-    assert data[0]["id"] == 1
+    assert len(data) >= 1
+    assert "firstname" in data[0]
 
 
-def test_delete_user_success(monkeypatch):
-    def fake_delete_user(id: int, db=None, admin=None):
-        return {"message": "Utilisateur supprimé"}
+def test_delete_user_success():
+    # Create a user first
+    res = client.post("/api/users", json={
+        "firstname": "User",
+        "lastname": "ToDelete",
+        "email": "delete@example.com",
+        "password": "secret",
+        "birthdate": "1990-01-01",
+        "city": "Paris",
+        "postal_code": "75000"
+    })
+    user_id = res.json()["id"]
 
-    monkeypatch.setattr("app.routers.users.delete_user", fake_delete_user)
+    # Simulate admin login
+    os.environ["ADMIN_EMAIL"] = "admin@test.com"
+    os.environ["ADMIN_PASSWORD"] = "adminpass"
+    client.app.router.on_startup[0]()  # Trigger create_admin
 
-    response = client.delete("/api/users/1")
+    login_res = client.post("/api/login", json={
+        "email": "admin@test.com",
+        "password": "adminpass"
+    })
+    token = login_res.json()["access_token"]
+
+    headers = {"Authorization": f"Bearer {token}"}
+    response = client.delete(f"/api/users/{user_id}", headers=headers)
     assert response.status_code == 200
-    assert response.json() == {"message": "Utilisateur supprimé"}
+    assert response.json()["message"] == "Utilisateur supprimé"
 
 
-def test_delete_user_not_found(monkeypatch):
-    from fastapi import HTTPException
+def test_delete_user_not_found():
+    os.environ["ADMIN_EMAIL"] = "admin@test.com"
+    os.environ["ADMIN_PASSWORD"] = "adminpass"
+    client.app.router.on_startup[0]()  # Trigger create_admin
 
-    def fake_delete_user(id: int, db=None, admin=None):
-        raise HTTPException(status_code=404, detail="Utilisateur introuvable")
+    login_res = client.post("/api/login", json={
+        "email": "admin@test.com",
+        "password": "adminpass"
+    })
+    token = login_res.json()["access_token"]
+    headers = {"Authorization": f"Bearer {token}"}
 
-    monkeypatch.setattr("app.routers.users.delete_user", fake_delete_user)
-
-    response = client.delete("/api/users/99")
+    response = client.delete("/api/users/9999", headers=headers)
     assert response.status_code == 404
     assert response.json()["detail"] == "Utilisateur introuvable"
     
