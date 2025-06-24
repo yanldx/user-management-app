@@ -1,3 +1,6 @@
+import os
+print("🌍 ENV:", dict(os.environ))
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from mangum import Mangum
